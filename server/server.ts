@@ -17,7 +17,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', homeController);
 
-fs.mkdirSync('./dist/files');
+const path = './dist/files';
+fs.stat(path, err => {
+  if (err) {
+    fs.mkdirSync(path);
+  } 
+});
 
 app.listen(app.get('port'), () => {
   console.log(('App is running at http://localhost:%d in %s mode'),

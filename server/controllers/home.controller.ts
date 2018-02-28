@@ -44,6 +44,12 @@ router.get('/ask-upload', (req: Request, res: Response) => {
 router.post('/send-chunk', upload.single('file'), (req: Request, res: Response) => {
   console.log('POST /send-chunk', req.body);
 
+  if (!(req.body && req.file && req.file.path && req.body.id && req.body.position)) {
+    return res.status(400).json({
+      message: 'not enough params'
+    });
+  }
+
   // Store in memory the chunk of data
   files[req.body.id][req.body.position] = req.file.path;
 
@@ -67,16 +73,14 @@ router.post('/validate-upload', (req: Request, res: Response) => {
 
   // Simple param existance check
   if (!(req.body.chunks && req.body.id && req.body.name)) {
-    return res.json({
-      error: true,
+    return res.status(400).json({
       message: 'no params'
     });
   }
 
   // Test if all chunks have been uploaded
   if (req.body.chunks !== files[req.body.id].length) {
-    return res.json({
-      error: true,
+    return res.status(400).json({
       message: 'not the right amount of chunks ' + req.body.chunks + ' ' + files[req.body.id].length
     });
   }
